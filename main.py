@@ -74,17 +74,34 @@ def main():
         choice = input("Pilih menu: ").strip()
 
         if choice == "1":
-            print("\n🧩 Membuat model baru...")
+            print("\n Membuat model baru...")
+
             nn = NeuralNetwork()
-            num_layers = int(input("Berapa banyak layer (layer output juga dihitung)? "))
-            input_size = int(input("Masukkan jumlah neuron input: "))
-            prev = input_size
+            
+            # Cek apakah sudah ada data sebelumnya
+            if inputs is not None and len(inputs) > 0:
+                input_size = len(inputs[0])
+                print(f"Jumlah neuron input otomatis diset ke {input_size} (dari dataset).")
+            else:
+                input_size = int(input("Masukkan jumlah neuron input: "))
+
+            num_layers = int(input("Berapa banyak layer (termasuk output layer)? "))
+            prev_size = input_size
+
             for i in range(num_layers):
-                out_sz = int(input(f"  Jumlah neuron di layer {i+1}: "))
+                out_size = int(input(f"Jumlah neuron di layer {i+1}: "))
                 act = input("  Fungsi aktivasi (relu/sigmoid/threshold): ").lower()
-                nn.add_layer(prev, out_sz, act)
-                prev = out_sz
-            print(" Model dibuat.")
+
+                # Validasi fungsi aktivasi biar gak salah ketik
+                if act not in ["relu", "sigmoid", "threshold"]:
+                    print("Aktivasi tidak dikenal, diganti ke 'relu' sebagai default.")
+                    act = "relu"
+
+                nn.add_layer(prev_size, out_size, act)
+                prev_size = out_size
+
+            print("Model berhasil dibuat!")
+
 
         elif choice == "2":
             inputs, targets = load_csv_data()
